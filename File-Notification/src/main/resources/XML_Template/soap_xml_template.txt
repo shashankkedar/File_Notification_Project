@@ -1,0 +1,93 @@
+<soap:Envelope
+	xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:tib="http://data.types.tib.telecom.tcs.com/1.1/TIBBillingCommonServices_v1.0"
+	xmlns:com="http://www.tcs.com/SoFT/CDM/1.1/Common"
+	xmlns:tib1="http://data.types.tib.telecom.tcs.com/1.1/TibContract"
+	xmlns:cus1="http://www.tcs.com/SoFT/CDM/1.1/Custom"
+	xmlns:cus="http://www.tcs.com/SoFT/CDM/1.1/Customer"
+	xmlns:add="http://www.tcs.com/SoFT/CDM/1.1/AddressVariants">
+	<soap:Header />
+	<soap:Body>
+		<tib:MakePaymentCommonRequestMessage>
+			<com:interactionID>#INTERACTION_ID#</com:interactionID>
+			<com:interactionDate>#PAY_BY_DATE#</com:interactionDate>
+			<com:SourceApplicationID>HOB</com:SourceApplicationID>
+			<com:serviceName>makePaymentCommon</com:serviceName>
+			<com:triggeredBy>PAYMENTBATCH</com:triggeredBy>
+			<com:clientVersion>1.0</com:clientVersion>
+			<com:UUID>ADMIN</com:UUID>
+			<com:channel>CSA</com:channel>
+			<com:opID>#OP_ID#</com:opID>
+			<com:buID>DEFAULT</com:buID>
+			<com:CustomInteraction />
+			<tib1:stringifiedContext>O1234233</tib1:stringifiedContext>
+			<tib:requestType>makePaymentCommon</tib:requestType>
+			<tib:billingAccountID>#ACCOUNT_ID#</tib:billingAccountID>
+			<tib:customerID>#CUSTOMER_ID#</tib:customerID>
+			<tib:subscriberID>#SUBSCRIBER_ID#</tib:subscriberID>
+			<tib:partyId>#ACCOUNT_ID#</tib:partyId>
+			<tib:partyType>#PARTY_TYPE#</tib:partyType>
+			<tib:partyRoleType>Customer</tib:partyRoleType>
+			<tib:Payment>
+				<!--<cus:paymentId>paymentId_Test_1</cus:paymentId> -->
+				<!--Optional/Should be unique If Present -->
+				<cus:paymentDate>#PAY_BY_DATE#</cus:paymentDate>
+				<cus:paymentAmount>
+					<com:units>#ACCOUNT_CURRENCY#</com:units>
+					<com:amount>#ACCOUNT_AMOUNT#</com:amount>
+				</cus:paymentAmount>
+				<cus:paymentSource>SELFCARE</cus:paymentSource>
+				<cus:paymentPlace>SELFCARE</cus:paymentPlace>
+				<cus:merchantAccountID>merchantAccountID</cus:merchantAccountID>
+				<cus:PaymentItem>
+					<cus:paymentLineId>message No</cus:paymentLineId>
+					<cus:status />
+					<cus:paymentDate>#PAY_BY_DATE#</cus:paymentDate>
+					<cus:effectiveDate>#PAY_BY_DATE#</cus:effectiveDate>
+					<cus:amount>
+						<com:units>#ACCOUNT_CURRENCY#</com:units>
+						<com:amount>#ACCOUNT_AMOUNT#</com:amount>
+					</cus:amount>
+					<cus:PaymentMethod>
+						<cus:paymentMethodId>Card</cus:paymentMethodId>
+						<cus:name>Debit</cus:name>
+						<cus:type>Card</cus:type>
+						<cus:paymentMethodDetail>
+							<cus:cardPaymentMethodDetails>
+								<cus:cardType>VISA</cus:cardType>
+								<cus:cardExpiry>07/2022</cus:cardExpiry>
+								<cus:tokenID>0</cus:tokenID>
+								<cus:pan>123456789</cus:pan>
+								<cus:merchantReference>merchantReference</cus:merchantReference>
+								<cus:merchantNumber>merchantNumber</cus:merchantNumber>
+								<cus:oneTimeAuthorizationCode>12345
+								</cus:oneTimeAuthorizationCode>
+								<cus:oneTimeAuthorizationMessage>oneTimeAuthorizationMessage
+								</cus:oneTimeAuthorizationMessage>
+							</cus:cardPaymentMethodDetails>
+						</cus:paymentMethodDetail>
+					</cus:PaymentMethod>
+				</cus:PaymentItem>
+				<cus:PaymentAmountBaseCurrency>
+					<com:units>#ACCOUNT_CURRENCY#</com:units>
+					<com:amount>#ACCOUNT_AMOUNT#</com:amount>
+				</cus:PaymentAmountBaseCurrency>
+				<cus:paymentReasonCode>BILL_PAYMENT</cus:paymentReasonCode>
+				<cus:PaymentBillAllocation>
+					<cus:allocationAmount>
+						<com:currency>#ACCOUNT_CURRENCY#</com:currency>
+						<com:amount>#ACCOUNT_AMOUNT#</com:amount>
+					</cus:allocationAmount>
+					<cus:allocatedToEntityID>#ACCOUNT_ID#</cus:allocatedToEntityID>
+					<cus:allocatedToEntityType>BILL</cus:allocatedToEntityType>
+					<cus:allocatedToRoleType>BILL</cus:allocatedToRoleType>
+					<cus:allocatedToRoleID>#ACCOUNT_ID#</cus:allocatedToRoleID>
+					<cus:CustomerBillReference>#INVOICE_NUMBER#</cus:CustomerBillReference>
+					<cus:PaymentReference>BILL</cus:PaymentReference>
+					<cus:paymentIndicator>BILL</cus:paymentIndicator>
+				</cus:PaymentBillAllocation>
+			</tib:Payment>
+			<tib:recursive>N</tib:recursive>
+		</tib:MakePaymentCommonRequestMessage>
+	</soap:Body>
+</soap:Envelope>

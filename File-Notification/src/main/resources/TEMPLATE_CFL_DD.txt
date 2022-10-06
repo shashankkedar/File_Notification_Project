@@ -1,0 +1,8 @@
+{VOL_1}{VOL_2}{VOL_3_SN}                               {SUN}                                {VOL_LAST}
+{HDR1_1}{HDR1_2}{HDR1_3}{HDR1_4_SUN}{HDR1_5_S}  {HDR1_6_1}{HDR1_7_SUN}{HDR1_8_SN}00010001000101{HDR1_9_CD}{HDR1_10_ED} {HDR1_11}                    
+{HDR2_1}{HDR2_2}{HDR2_3}{HDR2_4}{HDR2_5}                                   {HDR2_6}                            
+{UHL1_1}{UHL1_2} {UHL1_3_PD}{UHL1_4_REC_PRTY_NO}{UHL1_5_CCY_CD}000000{UHL1_6_WRKCD_ID} {UHL1_7_WRKCD_DESC}  {UHL1_8_FILE_NO}       {UHL1_9_AUD_ID}                          
+{Standard_Records}
+{EOF1_1}{EOF1_2}{HDR1_3}{HDR1_4_SUN}{HDR1_5_S}  {HDR1_6_1}{HDR1_7_SUN}{HDR1_8_SN}00010001000101{HDR1_9_CD}{HDR1_10_ED} {HDR1_11}                    
+{EOF2_1}{EOF2_2}{HDR2_3}{HDR2_4}{HDR2_5}                                   {HDR2_6}                            
+{UTL1_1}{UTL1_2}0000000000000000000000000000000000000000                                    

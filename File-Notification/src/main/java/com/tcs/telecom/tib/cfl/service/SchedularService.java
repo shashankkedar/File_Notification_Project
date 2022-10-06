@@ -55,8 +55,8 @@ public class SchedularService {
 	SOAP_Service soapService;
 	
 	   //@Scheduled(fixedRate = 60000)
-	  // @Scheduled(cron = "0 0 21 * * MON-FRI",zone = "BST")
-	   @Scheduled(cron = "0 0/15 7-19 * * MON-FRI",zone = "BST")
+	  @Scheduled(cron = "0 0 21 * * MON-FRI",zone = "BST")
+	  // @Scheduled(cron = "0 0/15 7-19 * * MON-FRI",zone = "BST")
 	   @Async
 	   public void auddis_cronJobSch() {
 		  

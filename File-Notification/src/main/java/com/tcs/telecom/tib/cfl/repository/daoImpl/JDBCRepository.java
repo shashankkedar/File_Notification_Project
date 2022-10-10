@@ -30,7 +30,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.tcs.telecom.tib.cfl.dao.CustomerPaymentDetailRepository;
-import com.tcs.telecom.tib.cfl.entity.BankDetailsRowMapper;
+import com.tcs.telecom.tib.cfl.entity.BankDetailsRowMapperForA;
+import com.tcs.telecom.tib.cfl.entity.BankDetailsRowMapperForP;
 import com.tcs.telecom.tib.cfl.entity.CustomerBankDetailsEntity;
 import com.tcs.telecom.tib.cfl.util.FileCreationConstants;
 
@@ -52,10 +53,12 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 			String sqlQry = "";
 			if(fileNature.equalsIgnoreCase(FileCreationConstants.AUDDIS)) {
 			     sqlQry = environment.getProperty(FileCreationConstants.FETCH_IN_PROGRESS_TXN_FOR_AUDDIS);
+			     objLst = jdbcTemplate.query(sqlQry,new Object[]{title}, new BankDetailsRowMapperForA());
 			}else if(fileNature.equalsIgnoreCase(FileCreationConstants.DD)) {
 				 sqlQry = environment.getProperty(FileCreationConstants.FETCH_IN_PROGRESS_TXN_FOR_DD);
+				 objLst = jdbcTemplate.query(sqlQry,new Object[]{title}, new BankDetailsRowMapperForP());
 			}
-			objLst = jdbcTemplate.query(sqlQry,new Object[]{title}, new BankDetailsRowMapper());
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

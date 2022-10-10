@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.tcs.telecom.tib.cfl.entity.CustomerBankDetailsEntity;
 @Component
-public class BankDetailsRowMapper implements RowMapper<CustomerBankDetailsEntity> {
+public class BankDetailsRowMapperForA implements RowMapper<CustomerBankDetailsEntity> {
 
 	@Override
 	public CustomerBankDetailsEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -40,10 +40,6 @@ public class BankDetailsRowMapper implements RowMapper<CustomerBankDetailsEntity
 		md.setTotalAmountDue(rs.getString("TOT_AMT_DUE"));
 		md.setFirstLastInd(rs.getString("FIRST_LAST_INV_IND"));
 		
-		md.setMstID(rs.getString("MST_ID"));
-		md.setpInteractionID(rs.getString("INTERACTION_ID"));
-		md.setFileType(rs.getString("FILE_TYPE"));
-		md.setDdFileStatus(rs.getString("DD_FILE_STATUS"));
 		
 		return md;
 	}

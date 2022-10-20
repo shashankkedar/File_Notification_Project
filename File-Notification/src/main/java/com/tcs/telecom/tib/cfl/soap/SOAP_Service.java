@@ -67,16 +67,21 @@ public class SOAP_Service {
 				
 				String Response_Status = (responseHmap.containsKey(FileCreationConstants.Response_Status) && null != responseHmap.get(FileCreationConstants.Response_Status))? responseHmap.get(FileCreationConstants.Response_Status).toString():"";
 				String responseCode= (responseHmap.containsKey(FileCreationConstants.Response_Code) && null != responseHmap.get(FileCreationConstants.Response_Code))? responseHmap.get(FileCreationConstants.Response_Code).toString():"";
+				String actualStatusType = (responseHmap.containsKey(FileCreationConstants.STATUS_TYPE) && null != responseHmap.get(FileCreationConstants.STATUS_TYPE))? responseHmap.get(FileCreationConstants.STATUS_TYPE).toString():"";
+				String actualStatusCode = (responseHmap.containsKey(FileCreationConstants.STATUS_CODE) && null != responseHmap.get(FileCreationConstants.STATUS_CODE))? responseHmap.get(FileCreationConstants.STATUS_CODE).toString():"";
+				String actualStatusDesc = (responseHmap.containsKey(FileCreationConstants.STATUS_DESC) && null != responseHmap.get(FileCreationConstants.STATUS_DESC))? responseHmap.get(FileCreationConstants.STATUS_DESC).toString():"";
+				
 				String response= (responseHmap.containsKey(FileCreationConstants.Response) && null != responseHmap.get(FileCreationConstants.Response))? responseHmap.get(FileCreationConstants.Response).toString():"";
 				String responseDate= (responseHmap.containsKey(FileCreationConstants.UpdatedDateTime) && null != responseHmap.get(FileCreationConstants.UpdatedDateTime))? responseHmap.get(FileCreationConstants.UpdatedDateTime).toString():"";
 						
 				String hobs_Status =FileCreationConstants.FAILED;
-				String dd_File_Status = FileCreationConstants.FAILED;
+				//String dd_File_Status = FileCreationConstants.FAILED;   //unused code
 				String hsbc_status = (singleMap.containsKey(FileCreationConstants.FILE_STATUS) && null != singleMap.get(FileCreationConstants.FILE_STATUS))? singleMap.get(FileCreationConstants.FILE_STATUS).toString():FileCreationConstants.SUCCESS;
+				String code = actualStatusCode.isEmpty()?responseCode:actualStatusCode;
 				if((!Response_Status.isEmpty()) && (Response_Status.equalsIgnoreCase(FileCreationConstants.OK))) {
-					hobs_Status = FileCreationConstants.SUCCESS;
+					hobs_Status = actualStatusType.isEmpty()?FileCreationConstants.SUCCESS:actualStatusType;
 					hsbc_status = FileCreationConstants.SUBMIT;
-					dd_File_Status = FileCreationConstants.SUCCESS;
+					//dd_File_Status = FileCreationConstants.SUCCESS;   //unused code
 				}
 				
 				
@@ -85,19 +90,21 @@ public class SOAP_Service {
 					String pInteractionID = null != singleMap.get("P_INTERACTION_ID")?singleMap.get("P_INTERACTION_ID").toString():"";
 					if(!interactionID.isEmpty()) {
 						//update hob_Status in mst table where interaction_id = (singleMap.get("InteractionID"))
-						jdbcRepository.updateMstTbl(finalSOAPRequesst,Response_Status,responseCode,response,responseDate,hobs_Status,hsbc_status,interactionID);
+						jdbcRepository.updateMstTbl(finalSOAPRequesst,Response_Status,code,response,responseDate,hobs_Status,hsbc_status,actualStatusDesc,interactionID);
 						
+					/* unused code
 						if(!pInteractionID.isEmpty()) {
 						//below updated qry for, DD_FILE_STATUS updation in parent/AUDDIS record update where p_interaction = (singleMap.get("PARENT_INTERACTION_ID"))
 						jdbcRepository.updateParentRecord(dd_File_Status,pInteractionID);
 						}
+					*/	
 						
 					}
 					
 				}
 				
 			}
-}
+   }
 	
 	
 
@@ -182,6 +189,11 @@ public class SOAP_Service {
 		int responseCode = 0;
 		String responseDate ="";
 		StringBuffer response = new StringBuffer();
+		
+		String statusCode ="";
+		String statusType ="";
+		String statusDesc ="";
+		
 		try {
 			String url = env.getProperty(FileCreationConstants.SOAP_URL);
 			URL obj = new URL(url);
@@ -220,10 +232,20 @@ public class SOAP_Service {
 			log.error("error come in soap service calling method :",e);
 			throw new Exception(e);
 		}
+		
+		if(responseCode==200) {
+			 statusCode = response.substring(response.indexOf("<ns3:statusCode>")+16, response.indexOf("</ns3:statusCode>"));
+			 statusType = response.substring(response.indexOf("<ns3:statusType>")+16, response.indexOf("</ns3:statusType>"));
+			 statusDesc = response.substring(response.indexOf("<ns3:statusDescription>")+23, response.indexOf("</ns3:statusDescription>"));
+		}
+		
 		responseHmap.put(FileCreationConstants.Response_Status, responseStatus);
 		responseHmap.put(FileCreationConstants.Response_Code, responseCode);
 		responseHmap.put(FileCreationConstants.Response, response);
 		responseHmap.put(FileCreationConstants.UpdatedDateTime, responseDate);
+		responseHmap.put(FileCreationConstants.STATUS_CODE, statusCode);
+		responseHmap.put(FileCreationConstants.STATUS_TYPE, statusType);
+		responseHmap.put(FileCreationConstants.STATUS_DESC, statusDesc);
 		
 		log.info("Inside soapServiceCalling ended ..");
 		return responseHmap;

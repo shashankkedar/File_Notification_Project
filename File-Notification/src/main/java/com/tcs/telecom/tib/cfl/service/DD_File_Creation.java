@@ -76,6 +76,12 @@ public class DD_File_Creation {
 	private String ddFileCreationLogic(String line,String creationDate,String expiryDate,List<CustomerBankDetailsEntity> custPaymentDetailLst,String seqNumber,String bacsProcessDate) {
 		
 		log.info("DD's file replacement logic started");
+		BigInteger totalAmount = new BigInteger("00000000000");
+		LocalDate ld = LocalDate.now();
+		String inputFormat = FileCreationConstants.INPUT_DATE;
+		int nextJDate = Integer.parseInt(util.toJulian(ld.plusDays(39).toString(), inputFormat,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT)));
+		int prevJDate = Integer.parseInt(util.toJulian(ld.minusDays(1).toString(), inputFormat,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT)));
+		
 		String serviceUserNumber = (null != environment.getProperty(FileCreationConstants.SERVICE_USER_NUMBER) || !(environment.getProperty(FileCreationConstants.SERVICE_USER_NUMBER).isEmpty())) ? environment.getProperty(FileCreationConstants.SERVICE_USER_NUMBER) :"SAGE  " ;
 		String processingDay = (null == environment.getProperty(FileCreationConstants.PROCESSING_DAY_VALUE) || (environment.getProperty(FileCreationConstants.PROCESSING_DAY_VALUE).isEmpty()))?"SingleDay":environment.getProperty(FileCreationConstants.PROCESSING_DAY_VALUE);
 		
@@ -178,11 +184,6 @@ public class DD_File_Creation {
 			//START-STD Record replacement logic
 				if((line.contains(FileCreationConstants.STD_REC_1) || line.contains(FileCreationConstants.STD_REC_2))&&custPaymentDetailLst.size()>0) 
 				{
-					LocalDate ld = LocalDate.now();
-					String inputFormat = FileCreationConstants.INPUT_DATE;
-					int nextJDate = Integer.parseInt(util.toJulian(ld.plusDays(39).toString(), inputFormat,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT)));
-					int prevJDate = Integer.parseInt(util.toJulian(ld.minusDays(1).toString(), inputFormat,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT)));
-					
 						for(int i =0;i<custPaymentDetailLst.size();i++) {
 							
 							    String constStr = "#0"+i+"-";
@@ -221,6 +222,9 @@ public class DD_File_Creation {
 							    }else if(custPaymentDetailLst.get(i).getTotalAmountDue().isEmpty()) {
 							    	amountDue= new BigInteger("00000000000");
 							    }
+							    
+							     totalAmount = totalAmount.add(amountDue);
+							     
 							    // transaction code deciding flag for now this value come from property file, next phase it will come from DB
 							    String transactionCode = "";
 							    if(!(custPaymentDetailLst.get(i).getFirstLastInd().isEmpty()) || null != custPaymentDetailLst.get(i).getFirstLastInd()) 
@@ -267,6 +271,31 @@ public class DD_File_Creation {
 				}
 				
 			//END-STD Record replacement logic
+				
+		   //START-CONTRA-Record replacement logic
+			    String origSortCD = environment.getProperty(FileCreationConstants.ORIGINATING_SORT_CODE);
+			    String origAccNum = environment.getProperty(FileCreationConstants.ORIGINATING_ACC_NUM);
+			    String transactionCode = "99";
+			    
+			    
+				line = line.contains(FileCreationConstants.CONTRA_REC_1)?line.replace(FileCreationConstants.CONTRA_REC_1, String.format(FileCreationConstants.PADDING_6_DIGIT, origSortCD).replace(' ', '1')):line;
+				line = line.contains(FileCreationConstants.CONTRA_REC_2)?line.replace(FileCreationConstants.CONTRA_REC_2, String.format(FileCreationConstants.PADDING_8_DIGIT, origAccNum).replace(' ', '2')):line;
+				line = line.contains(FileCreationConstants.CONTRA_TransactionCode)?line.replace(FileCreationConstants.CONTRA_TransactionCode, String.format(FileCreationConstants.PADDING_2_DIGIT, transactionCode).replace(' ', ' ')):line;
+				line = line.contains(FileCreationConstants.CONTRA_OrigSrtCode)?line.replace(FileCreationConstants.CONTRA_OrigSrtCode, String.format(FileCreationConstants.PADDING_6_DIGIT, origSortCD).replace(' ', '3')):line;
+				line = line.contains(FileCreationConstants.CONTRA_OrigAccNum)?line.replace(FileCreationConstants.CONTRA_OrigAccNum, String.format(FileCreationConstants.PADDING_8_DIGIT, origAccNum).replace(' ', '4')):line;
+				line = line.contains(FileCreationConstants.CONTRA_FreeFormat)?line.replace(FileCreationConstants.CONTRA_FreeFormat, String.format(FileCreationConstants.PADDING_4_DIGIT, "    ").replace(' ', ' ')):line;
+				line = line.contains(FileCreationConstants.CONTRA_Amount)?line.replace(FileCreationConstants.CONTRA_Amount, String.format(FileCreationConstants.PADDING_11_DIGIT, totalAmount).replace(' ', '0')):line;
+				line = line.contains(FileCreationConstants.CONTRA_Narrative_User)?line.replace(FileCreationConstants.CONTRA_Narrative_User, String.format(FileCreationConstants.PADDING_18_DIGIT, "AAABBBCCCDDDEEEFFF").replace(' ', ' ')):line;
+				line = line.contains(FileCreationConstants.CONTRA_IDENTIFY)?line.replace("{CONTRA_IDENTIFY}", String.format(FileCreationConstants.PADDING_12_DIGIT, "CONTRA            ").replace(' ', ' ')):line;
+				line = line.contains(FileCreationConstants.CONTRA_User_Account_Name)?line.replace(FileCreationConstants.CONTRA_User_Account_Name, String.format(FileCreationConstants.PADDING_18_DIGIT, "ZZZYYYXXXWWWUUUVVV").replace(' ', ' ')):line;
+
+				int currentJDate = Integer.parseInt(creationDate);
+				if(currentJDate > prevJDate && currentJDate < nextJDate) {
+					line = line.contains(FileCreationConstants.CONRA_PD)?line.replace(FileCreationConstants.CONRA_PD, String.format(FileCreationConstants.PADDING_6_DIGIT, creationDate).replace(' ', ' ')):line;
+				}else {
+					line = line.contains(FileCreationConstants.CONRA_PD)?line.replace(FileCreationConstants.CONRA_PD, String.format(FileCreationConstants.PADDING_6_DIGIT, "      ").replace(' ', ' ')):line;
+				}
+		  //END-CONTRA-Record replacement logic	
 			
 		}
 		log.info("DD's file replacement logic ended");

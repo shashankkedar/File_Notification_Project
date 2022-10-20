@@ -57,7 +57,7 @@ public class AUDDIS_File_Creation {
 				    //Julian date conversion
 				  LocalDate ld = LocalDate.now();
 				  String creationDate = util.toJulian(ld.toString(),FileCreationConstants.INPUT_DATE,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT));
-				  String expiryDate = util.toJulian(ld.plusYears(1).toString(),FileCreationConstants.INPUT_DATE,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT));
+				  String expiryDate = util.toJulian(ld.plusDays(5).toString(),FileCreationConstants.INPUT_DATE,environment.getProperty(FileCreationConstants.JULIAN_DATE_FORMAT));
 				  
 				  Integer seqCount =  daoOprImpl.getSequenceNumber();
 				  String  seqNumber = seqCount !=null?String.valueOf(seqCount):"1";

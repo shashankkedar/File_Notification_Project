@@ -43,20 +43,22 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 	
 	@Autowired
 	private Environment environment;
-
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<CustomerBankDetailsEntity> findAll(String title,String fileNature) {
+	public List<CustomerBankDetailsEntity> findAll(String fileNature) {
 		log.info("inside findAll method  :: " );
 		List<CustomerBankDetailsEntity> objLst = new ArrayList<CustomerBankDetailsEntity>();
 		try {
 			String sqlQry = "";
 			if(fileNature.equalsIgnoreCase(FileCreationConstants.AUDDIS)) {
+				 String aStatus = environment.getProperty(FileCreationConstants.AUDDIS_STATUS_LST);
 			     sqlQry = environment.getProperty(FileCreationConstants.FETCH_IN_PROGRESS_TXN_FOR_AUDDIS);
-			     objLst = jdbcTemplate.query(sqlQry,new Object[]{title}, new BankDetailsRowMapperForA());
+			     objLst = jdbcTemplate.query(String.format(sqlQry,aStatus), new BankDetailsRowMapperForA());
 			}else if(fileNature.equalsIgnoreCase(FileCreationConstants.DD)) {
+				String pStatus = environment.getProperty(FileCreationConstants.DD_STATUS_LST);
 				 sqlQry = environment.getProperty(FileCreationConstants.FETCH_IN_PROGRESS_TXN_FOR_DD);
-				 objLst = jdbcTemplate.query(sqlQry,new Object[]{title}, new BankDetailsRowMapperForP());
+				 objLst = jdbcTemplate.query(sqlQry,new Object[]{pStatus}, new BankDetailsRowMapperForP());
 			}
 			
 			
@@ -106,6 +108,10 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 		String accountDetailsQry ="";
 		if(fileNature.equalsIgnoreCase(FileCreationConstants.AUDDIS)) {
 			accountDetailsQry = environment.getProperty(FileCreationConstants.FETCH_ACCOUNT_ID_DETAILS_AUDDIS);
+			
+			// once the AUDDIS files created on HSBC server then change cpm.stauts ='IN-PROGRESS/PENDING' to 'ACTIVE'
+			updateCustomerStatus(sb);
+			
 		}else if(fileNature.equalsIgnoreCase(FileCreationConstants.DD)){
 			accountDetailsQry = environment.getProperty(FileCreationConstants.FETCH_ACCOUNT_ID_DETAILS_DD);
 		}
@@ -113,6 +119,7 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 		log.info("Query 11:: " + accountDetailsQry);
 
 		List<Map<String, Object>> accountDetailsLst  = jdbcTemplate.queryForList(String.format(accountDetailsQry,sb));
+		
 		log.info(" findByAccountId4 method ended.."+accountDetailsLst);
 		
 		return accountDetailsLst;
@@ -172,20 +179,20 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 		 
 	}
 
-	public void updateMstTbl(String request,String Response_Status,String responseCode,String response,String responseDate,String hobs_Status,String hsbc_status, String interactionID) throws Exception {
+	public void updateMstTbl(String request,String Response_Status,String responseCode,String response,String responseDate,String hobs_Status,String hsbc_status, String actualStatusDesc, String interactionID) throws Exception {
 		log.info(" updateMstTbl method started..");
 		String updateQuery = environment.getProperty(FileCreationConstants.UPDATE_MST_TBL);
 		
-		Object[] params = new Object[] {request, Response_Status,responseCode,response,responseDate,hobs_Status,hsbc_status, interactionID};
+		Object[] params = new Object[] {request, Response_Status,responseCode,response,responseDate,hobs_Status,hsbc_status,actualStatusDesc, interactionID};
 
-		int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.LONGVARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR};
+		int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.LONGVARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR};
 
 		int updatedCnt = jdbcTemplate.update(updateQuery,params,types);
 		
 		log.info(" updateMstTbl method ended with updated row count.." +updatedCnt);
 		
 	}
-
+/* unused method
 	public void updateParentRecord(String dd_File_Status, String pInteractionID) {
 		log.info(" updateParentRecord method started..");
 		String updateQuery = "UPDATE rms_billing.FILE_NOTIFICATION_MST SET DD_FILE_STATUS =? WHERE INTERACTION_ID=?";
@@ -200,5 +207,43 @@ public class JDBCRepository implements CustomerPaymentDetailRepository {
 		
 	}
 
+*/
+	
+	public void updateCustomerStatus(String partyId) {
+		log.info(" updateCustomerStatus method started.."+partyId);
+		String updateQuery = environment.getProperty(FileCreationConstants.UPDATE_CUST_STATUS);
+		
+		int updatedCnt = jdbcTemplate.update(String.format(updateQuery,partyId));
+		
+		log.info(" updateCustomerStatus method ended with updated row count.." +updatedCnt);
+		
+	}
 
+	public HashMap<String, Object> saveTxnRecord(HashMap<String, Object> singleMap) {
+		log.info(" saveTxnRecord method started..");
+			String insertQry = environment.getProperty(FileCreationConstants.INSERT_FILE_TXN_INFO);
+			
+			if(null != singleMap && !(singleMap.isEmpty())) {
+			
+			String INTERACTION_ID = (singleMap.containsKey("INTERACTION_ID") && null != singleMap.get("INTERACTION_ID"))?singleMap.get("INTERACTION_ID").toString():null;
+			String ACCOUNT_ID = (singleMap.containsKey(FileCreationConstants.ACCOUNT_ID) && null != singleMap.get(FileCreationConstants.ACCOUNT_ID))?singleMap.get(FileCreationConstants.ACCOUNT_ID).toString():null;
+			String invoice_num = (singleMap.containsKey(FileCreationConstants.invoice_num) && null != singleMap.get(FileCreationConstants.invoice_num))?singleMap.get(FileCreationConstants.invoice_num).toString():null;
+			String FILE_TYPE = (singleMap.containsKey(FileCreationConstants.FILE_TYPE) && null != singleMap.get(FileCreationConstants.FILE_TYPE))?singleMap.get(FileCreationConstants.FILE_TYPE).toString():null;
+			String FILE_NAME = (singleMap.containsKey(FileCreationConstants.FILE_NAME) && null != singleMap.get(FileCreationConstants.FILE_NAME))?singleMap.get(FileCreationConstants.FILE_NAME).toString():null;
+			String FILE_DATA = (singleMap.containsKey(FileCreationConstants.FILE_DATA) && null != singleMap.get(FileCreationConstants.FILE_DATA))?singleMap.get(FileCreationConstants.FILE_DATA).toString():null;
+			String reqDateTime=(singleMap.containsKey(FileCreationConstants.REQ_DATE_TIME) && null != singleMap.get(FileCreationConstants.REQ_DATE_TIME))?singleMap.get(FileCreationConstants.REQ_DATE_TIME).toString():null;
+			
+			Object[] params = new Object[] {INTERACTION_ID, ACCOUNT_ID, invoice_num,FILE_TYPE,FILE_NAME,FILE_DATA,reqDateTime};
+			
+		    int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.LONGVARCHAR,Types.VARCHAR};
+		    
+		    int row = jdbcTemplate.update(insertQry, params, types);
+		    
+		    log.info(" saveTxnRecord method ended with row count.." +row);
+		
+		  }
+			return singleMap;
+			
+     }
+	
 }

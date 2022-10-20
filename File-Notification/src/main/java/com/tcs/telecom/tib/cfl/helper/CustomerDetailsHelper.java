@@ -43,7 +43,7 @@ public class CustomerDetailsHelper {
 		List<CustomerBankDetailsEntity> custDetailLst = new ArrayList<CustomerBankDetailsEntity>();
 		try {
 
-			custDetailLst = jdbcRepository.findAll(env.getProperty(FileCreationConstants.STATUS_LST),fileNature);
+			custDetailLst = jdbcRepository.findAll(fileNature);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,6 +101,14 @@ public class CustomerDetailsHelper {
 		log.info("Inside insertInMasterTbl started.." + responseMap);
 		responseMap  = jdbcRepository.saveResponseInMasterTbl(responseMap);
 		log.info("Inside insertInMasterTbl ended..");
+		
+		return responseMap;
+	}
+
+	public HashMap<String, Object> insertTxnRecord(HashMap<String, Object> singleMap) {
+		log.info("Inside insertTxnRecord started.." + singleMap);
+		HashMap<String, Object> responseMap  = jdbcRepository.saveTxnRecord(singleMap);
+		log.info("Inside insertTxnRecord ended..");
 		
 		return responseMap;
 	}

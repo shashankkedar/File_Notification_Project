@@ -197,14 +197,13 @@ public class CommanUtility {
 			      if (myObj.createNewFile()) {
 			    	  log.info("File created: " + myObj.getName());
 				      fStatus=FileCreationConstants.SUCCESS;
+				      FileWriter myWriter = new FileWriter(relativePath);
+				      myWriter.write(data);
+				      myWriter.close();
 			      } else {
 			    	  log.info("File already exists.");
 			    	  fStatus=FileCreationConstants.FAILED;
 			      }
-			      
-			      FileWriter myWriter = new FileWriter(relativePath);
-			      myWriter.write(data);
-			      myWriter.close();
 			      
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -216,6 +215,7 @@ public class CommanUtility {
 			fileMap.put(FileCreationConstants.FILE_NAME, fileName);
 			fileMap.put(FileCreationConstants.FILE_TYPE, fileType);
 			fileMap.put(FileCreationConstants.REQ_DATE_TIME, requestDateTime);
+			fileMap.put(FileCreationConstants.FILE_DATA, data);
 			
 			return fileMap;
 		}
@@ -408,5 +408,27 @@ public class CommanUtility {
 		        	log.info("Failed to move the file");
 		        }
 		
+	}
+	public List<HashMap<String, Object>> insertionInTxnTable(List<HashMap<String, Object>> lstMap) throws Exception {
+		// TODO Auto-generated method stub
+
+		log.info("insertionInTxnTable method started list size ::" + lstMap.size());
+		log.info("insertionInTxnTable method started list size #### ::" + lstMap);
+		List<HashMap<String, Object>> lstOfMap = new ArrayList<>();
+		try {
+		for (HashMap<String, Object> singleMap : lstMap) {
+
+			HashMap<String, Object> returnMap  = helper.insertTxnRecord(singleMap);
+			lstOfMap.add(returnMap);
+		}
+		
+		log.info("insertionInTxnTable method  ended ::" + lstMap);
+		}catch (Exception e) {
+				e.printStackTrace();
+				log.error("error occurred while inserting a row in MST table " + e);
+				throw new Exception(e);
+		}
+		return lstOfMap;
+	
 	}
 }

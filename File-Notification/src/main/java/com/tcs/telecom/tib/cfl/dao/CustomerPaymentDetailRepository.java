@@ -22,7 +22,7 @@ import java.util.Map;
 import com.tcs.telecom.tib.cfl.entity.CustomerBankDetailsEntity;
 
 public interface CustomerPaymentDetailRepository {
-	List<CustomerBankDetailsEntity> findAll(String title,String fileNature);
+	List<CustomerBankDetailsEntity> findAll(String fileNature);
 	
 	int saveSeqNumber();
 	
@@ -31,4 +31,6 @@ public interface CustomerPaymentDetailRepository {
 	List<Map<String, Object>> findByAccountId(List<String> accountIDList,String fileNature);
 	
 	HashMap<String, Object> saveResponseInMasterTbl(HashMap<String, Object>responseMap);
+	
+	HashMap<String, Object> saveTxnRecord(HashMap<String, Object> singleMap);
 }

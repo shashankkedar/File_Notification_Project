@@ -23,7 +23,8 @@ public final class FileCreationConstants {
 	public static final String DD_FILE_PATH = "DD_FILE_PATH";
 	public static final String DD_FILE_NAME="DD_FILE_NAME";
 	public static final String SOAP_XML_TEMPLATE_PATH ="/XML_Template/soap_xml_template.txt";
-	public static final String STATUS_LST="STATUS_LST";
+	public static final String AUDDIS_STATUS_LST="AUDDIS_STATUS_LST";
+	public static final String DD_STATUS_LST="DD_STATUS_LST";
 	public static final String JULIAN_DATE_FORMAT="JULIAN_DATE_FORMAT";
 	public static final String AUDDIS_TEMPLATE_FILE_NAME="TEMPLATE_CFL_AUDDIS.txt";
 	public static final String DD_TEMPLATE_FILE_NAME="TEMPLATE_CFL_DD.txt";
@@ -54,7 +55,9 @@ public final class FileCreationConstants {
 	public static final String FETCH_ACCOUNT_ID_DETAILS_AUDDIS="FETCH_ACCOUNT_ID_DETAILS_AUDDIS";
 	public static final String FETCH_ACCOUNT_ID_DETAILS_DD="FETCH_ACCOUNT_ID_DETAILS_DD";
 	public static final String INSERT_FILE_NOTIFY_MST="INSERT_FILE_NOTIFY_MST";
-	public static final String UPDATE_MST_TBL="UPDATE_MST_TBL";
+	public static final String INSERT_FILE_TXN_INFO="INSERT_FILE_TXN_INFO"; 
+	public static final String UPDATE_MST_TBL="UPDATE_MST_TBL"; 
+	public static final String UPDATE_CUST_STATUS="UPDATE_CUST_STATUS";
 	public static final String RHM_OPR_ID="RHM_OPR_ID";
 	
 	//HSBC SERVER DETAILS
@@ -78,9 +81,14 @@ public final class FileCreationConstants {
 	public static final String INVOICE_SEQ_NBR="INVOICE_SEQ_NBR";
 	public static final String FILE_TYPE="FILE_TYPE";
 	public static final String FILE_NAME="FILE_NAME";
+	public static final String FILE_DATA="FILE_DATA";
 	public static final String Response_Status="Response_Status";
 	public static final String Response="Response";
 	public static final String Response_Code="Response_Code";
+	public static final String STATUS_CODE="STATUS_CODE";
+	public static final String STATUS_TYPE="STATUS_TYPE";
+	public static final String STATUS_DESC="STATUS_DESC";
+	
 	public static final String BATCH="BATCH";
 	public static final String HOBS="HOBS";
 	public static final String UpdatedDateTime="UpdatedDateTime";
@@ -173,6 +181,7 @@ public final class FileCreationConstants {
 	public static final String PADDING_6_DIGIT = "%6s";
 	public static final String PADDING_8_DIGIT = "%8s";
 	public static final String PADDING_11_DIGIT = "%11s";
+	public static final String PADDING_12_DIGIT = "%12s";
 	public static final String PADDING_18_DIGIT = "%18s";
 	public static final String SUN = "{SUN}";
 	public static final String STD_RECORD ="{Standard_Records}";
@@ -186,6 +195,19 @@ public final class FileCreationConstants {
 	public static final String userRefName="{userRefName}";
 	public static final String DestAccountName="{DestAccountName}";
 	public static final String ProcessDayData="{ProcessDayData}";
+	
+	public static final String CONTRA_REC_1="{CONTRA_REC_1}";
+	public static final String CONTRA_REC_2="{CONTRA_REC_2}";
+	public static final String CONTRA_TransactionCode="{CONTRA_TransactionCode}";
+	public static final String CONTRA_OrigSrtCode="{CONTRA_OrigSrtCode}";
+	public static final String CONTRA_OrigAccNum="{CONTRA_OrigAccNum}";
+	public static final String CONTRA_FreeFormat="{CONTRA_FreeFormat}";
+	public static final String CONTRA_Amount="{CONTRA_Amount}";
+	public static final String CONTRA_Narrative_User="{CONTRA_Narrative_User}";
+	public static final String CONTRA_IDENTIFY="{CONTRA_IDENTIFY}";
+	public static final String CONTRA_User_Account_Name="{CONTRA_User_Account_Name}";
+	public static final String CONRA_PD="{CONRA_PD}";
+	
 	
 	// Replacement Constant END
 
